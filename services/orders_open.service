@@ -1,0 +1,19 @@
+[Unit]
+Description=PHP orders_open
+
+
+[Service]
+User=www-root
+Group=www-root
+
+Type=simple
+TimeoutSec=0
+PIDFile=/var/run/orders_open.pid
+ExecStart=/bin/sh -c '/usr/bin/php -f /home/alex/projects/statistics/artisan orders_open  2>&1 > /home/alex/projects/statistics/orders_open.log'
+KillMode=mixed
+
+Restart=on-failure
+RestartSec=30s
+
+[Install]
+WantedBy=default.target

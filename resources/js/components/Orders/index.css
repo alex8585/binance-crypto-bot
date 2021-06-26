@@ -1,0 +1,20 @@
+.table th, .table td {
+    
+    
+}
+.btn-filter {
+    margin-bottom:15px; 
+    margin-right:10px
+}
+
+.total-percent {
+    height: 2.3em;
+    line-height: 2.3em;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.sell-all {
+    float:right;
+    margin-right: 30px;
+}

@@ -1,0 +1,15 @@
+/vendor
+/backup
+/orders_change.log
+/orders_open.log
+/ca.pem
+/cron-log.txt
+/stop_loss.log
+/squery.sql
+/queue_worker.log
+/queue-orderbook.log
+/queue-statistics.log
+/node_modules
+/tv_parcer/node_modules
+.phpunit.result.cache
+.env

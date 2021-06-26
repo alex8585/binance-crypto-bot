@@ -1,0 +1,18 @@
+[Unit]
+Description=PHP queue_worker
+
+
+[Service]
+User=root
+Type=simple
+TimeoutSec=0
+PIDFile=/var/run/queue_worker.pid
+ExecStart=/bin/sh -c '/usr/bin/php -f /home/alex/projects/statistics/artisan queue:work --queue=default 2>&1 > /home/alex/projects/statistics/queue_worker.log'
+
+KillMode=mixed
+
+Restart=on-failure
+RestartSec=30s
+
+[Install]
+WantedBy=default.target
