@@ -16,7 +16,11 @@ The Block Runner makes no representation or warranties as to the accuracy and or
 
 ## Installation
 
-- cd this-bot-project-folder
+- git clone git@github.com:alex8585/binance-crypto-bot.git bot
+
+- cd bot
+
+- copy .env.example to .env and edit this file
 
 - composer install
 
@@ -29,5 +33,5 @@ The Block Runner makes no representation or warranties as to the accuracy and or
 ## To start trading
 
 In order to start trading, you have to run two processes. Files for systemd are /services/orders_open.service , /services/orders_change.service or you can run their as commands from shell
-php artisan orders_open
+php artisan orders_open ,
 php artisan orders_change
