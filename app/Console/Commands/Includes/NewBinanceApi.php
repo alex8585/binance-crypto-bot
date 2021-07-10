@@ -2,9 +2,20 @@
 
 namespace App\Console\Commands\Includes;
 
+
+
 class NewBinanceApi extends \Binance\API
 {
+
+
     public $caOverride = true;
+
+    public function setTimeOffset($timeOffset)
+    {
+        $this->info['timeOffset'] = $timeOffset;
+    }
+
+
     public function order(string $side, string $symbol, $quantity, $price, string $type = "LIMIT", array $flags = [], bool $test = false)
     {
         $opt = [

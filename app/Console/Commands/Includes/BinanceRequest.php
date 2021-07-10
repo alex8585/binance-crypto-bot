@@ -13,7 +13,36 @@ class BinanceRequest
         $this->excludeSymbols = config('settings.binance.symbols_exclude');
 
         $this->key = config('settings.binance.api_key');
-        $this->secret = config('settings.binance.api_secret');
+        //$this->secret = config('settings.binance.api_secret');
+    }
+
+    // public function nonce()
+    // {
+    //     return $this->milliseconds() - $this->options['timeDifference'];
+    // }
+
+    public static function milliseconds()
+    {
+        list($msec, $sec) = explode(' ', microtime());
+        return $sec . substr($msec, 2, 3);
+    }
+
+    public function load_time_difference($params = array())
+    {
+        $serverTime = $this->fetch_time($params);
+        $after = $this->milliseconds();
+        $timeDifference =  $serverTime - $after;
+        return  $timeDifference;
+    }
+
+    public function fetch_time($params = array())
+    {
+        $method = 'time';
+        $response = $this->get($method, $params);
+        if (isset($response->serverTime)) {
+            return $response->serverTime;
+        }
+        return null;
     }
 
     public function get($endpoint, $params = [])
