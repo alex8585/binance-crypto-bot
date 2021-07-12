@@ -3,13 +3,13 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Order as Order;
-use App\Console\Commands\Includes\BinanceApi  as BinanceApi;
-use App\Symbol as Symbol;
-use \Carbon\Carbon as Carbon;
-use Illuminate\Support\Facades\Cache;
+//use App\Order as Order;
+//use App\Console\Commands\Includes\BinanceApi  as BinanceApi;
+//use App\Symbol as Symbol;
+//use \Carbon\Carbon as Carbon;
+//use Illuminate\Support\Facades\Cache;
 use App\Console\Commands\Includes\BotUtils;
-use App\Console\Commands\Includes\BinanceRequest;
+//use App\Console\Commands\Includes\BinanceRequest;
 
 class test2 extends Command
 {
@@ -37,8 +37,10 @@ class test2 extends Command
     {
         parent::__construct();
 
-        $this->binRequest = new BinanceRequest();
-        $this->binApi =  new BinanceApi();
+
+
+        // $this->binRequest = new BinanceRequest();
+        // $this->binApi =  new BinanceApi();
     }
 
     /**
@@ -48,33 +50,25 @@ class test2 extends Command
      */
     public function handle()
     {
-        //system('systemctl status orders_change');
+        $t = $this->getCacheTicker();
+        dd($t);
 
-        //dd('1111');
-        //Cache::forget('balances2');
-        //Cache::forget('balance_total2');
-        //Cache::put('balances');
-        //Cache::put('balance_total');
-        // $balances = Cache::get('balances2', []);
-        // $balance_total = Cache::get('balance_total2');
-        // dump($balances);
-        // dump($balance_total);
-
-
-        //dd($b);
-
-        // $balances = $this->binApi->balances();
-
-        // foreach ($balances as $symbol => $balance) {
-        //     if (($balance['available'] == 0) && ($balance['onOrder'] == 0)) continue;
-
-        //     $insertData[$symbol] = [
-        //         'symbol' => $symbol,
-        //         'available' => $balance['available'],
-        //         'on_order' => $balance['onOrder'],
-        //     ];
-        // }
-        // $c = Cache::put('balances', $insertData);
-        // dd($c);
+        $diff =  [
+            "BNB" =>  [
+                "available" => "1",
+                "onOrder" => "0.00000000"
+            ],
+            "USDT" => [
+                "available" => "0",
+                "onOrder" => "0.00000000"
+            ],
+            "LIT" => [
+                "available" => "0.00000000",
+                "onOrder" => "0.00000000"
+            ]
+        ];
+        //dd('2');
+        // $diff = [];
+        $this->updateBalancesOnBalanceUpdate();
     }
 }

@@ -24,6 +24,31 @@ trait BotUtils
         Cache::forget('open_orders');
     }
 
+    public function setCacheTicker($ticker)
+    {
+        Cache::put('ticker', $ticker);
+        return $ticker;
+    }
+
+    public function getCacheTicker()
+    {
+        return Cache::remember('ticker', 180, function () {
+
+            if (!isset($this->binRequest)) {
+                $this->binRequest = new BinanceRequest();
+            }
+
+            if (!isset($this->binApi)) {
+                $this->binApi =  new BinanceApi();
+            }
+
+            $rawTicker = $this->binApi->prices();
+            $this->symbols = Symbol::select(['symbol', 'min_lot_size', 'data'])->get()->toArray();
+            $this->ticker = $this->binRequest->filterTickerSymbols($rawTicker, $this->symbols);
+            return $this->ticker;
+        });
+    }
+
     public function getOpenOrders()
     {
         //dump(['getOpenOrders']);
@@ -123,32 +148,72 @@ trait BotUtils
 
         //dump(['updateBalances']);
         $balances = $this->getBinanceBalances();
+        if (!$balances) {
+            return false;
+        }
+
+
         $oldBalances = Cache::get('balances2', []);
 
         Cache::put('balances2', $balances);
         $this->setTotalBalances($balances);
 
         if ($oldBalances != $balances) {
-            //$this->setTotalBalances($balances);
             $this->updateBalanceHistory($balances);
             $this->updateDbBalances($balances);
         }
+
+        return true;
+    }
+
+    public function updateBalancesOnBalanceUpdate($diff = [])
+    {
+
+        dump(["updateBalancesOnBalanceUpdate", $diff]);
+        if (!$diff) {
+            //return false;
+        }
+
+        $balances = $this->getBalances();
+        //dump($balances);
+
+        foreach ($diff as $symbol => $balance) {
+            $balances[$symbol] = [
+                "symbol" => $symbol,
+                "available" => $balance['available'],
+                "on_order" => $balance['onOrder'],
+            ];
+        }
+        Cache::put('balances2', $balances);
+        // dump($balances);
+        $this->setTotalBalances($balances);
+
+        $this->updateBalanceHistory($balances);
+        $this->updateDbBalances($balances);
+        return true;
     }
 
     public function setTotalBalances($balances)
     {
-        //dump(['setTotalBalances']);
+        //dump($balances);
+        dump(['setTotalBalances']);
         $balance_total = $this->calcTotalBalancesPrice($balances);
+        dump($balance_total);
         Cache::put('balance_total2', $balance_total);
     }
 
-    public function getTotalBalances($balances)
+    public function getTotalBalances($balances = [])
     {
-        //dump(['getTotalBalances']);
-        return Cache::remember('balance_total2', 180, function () use ($balances) {
-            //dump(['getTotalBalances2']);
+        //$balances = $this->getBalances();
+        //dump($balances);
+        //Cache::forget('balance_total2');
+        $total = Cache::remember('balance_total2', 180, function () {
+            $balances = $this->getBalances();
+            dump(['getTotalBalances2']);
             return $this->calcTotalBalancesPrice($balances);
         });
+        //dump(['getTotalBalances', $total]);
+        return $total;
     }
 
 
@@ -294,20 +359,25 @@ trait BotUtils
 
     public function calcTotalBalancesPrice($balances)
     {
-        if (!isset($this->ticker)) {
-            if (!isset($this->binRequest)) {
-                $this->binRequest = new BinanceRequest();
-            }
-            if (!isset($this->binApi)) {
-                $this->binApi =  new BinanceApi();
-            }
+        //dump($balances);
+        // if (!isset($this->ticker)) {
+        // if (!isset($this->binRequest)) {
+        //     $this->binRequest = new BinanceRequest();
+        // }
+        // if (!isset($this->binApi)) {
+        //     $this->binApi =  new BinanceApi();
+        // }
 
-            $rawTicker = $this->binApi->prices();
-            $this->symbols = Symbol::select(['symbol', 'min_lot_size', 'data'])->get()->toArray();
-            $this->ticker = $this->binRequest->filterTickerSymbols($rawTicker, $this->symbols);
-            //dd($this->ticker);
-        }
+        // $rawTicker = $this->binApi->prices();
+        // $this->symbols = Symbol::select(['symbol', 'min_lot_size', 'data'])->get()->toArray();
+        //$this->ticker = $this->binRequest->filterTickerSymbols($rawTicker, $this->symbols);
 
+        // dump($this->ticker);
+        // }
+
+
+        $this->ticker = $this->getCacheTicker();
+        //dd($this->ticker);
         $total = 0;
 
         if (isset($balances['USDT'])) {
@@ -318,8 +388,10 @@ trait BotUtils
         foreach ($balances as $symbol => $balance) {
             if (!$balance['available'] && !$balance['on_order']) continue;
             if ($symbol == 'USDT') continue;
-            if (!isset($this->ticker[$symbol . 'USDT'])) continue;
-
+            if (!isset($this->ticker[$symbol . 'USDT'])) {
+                dump('!isset' . $symbol . 'USDT');
+                continue;
+            }
             $curPrice = $this->ticker[$symbol . 'USDT'];
             $available = $balance['available'];
             $on_order = $balance['on_order'];

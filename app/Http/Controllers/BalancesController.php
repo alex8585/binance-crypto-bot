@@ -26,18 +26,18 @@ class BalancesController extends Controller
 
     public function index(Request $request)
     {
-        $rawTicker = $this->binApi->prices();
-        $this->symbols = Symbol::select(['symbol', 'min_lot_size', 'data'])->get()->toArray();
-        $this->ticker = $this->binRequest->filterTickerSymbols($rawTicker, $this->symbols);
+        //$rawTicker = $this->binApi->prices();
+        //$this->symbols = Symbol::select(['symbol', 'min_lot_size', 'data'])->get()->toArray();
+        //$this->ticker = $this->binRequest->filterTickerSymbols($rawTicker, $this->symbols);
+        $this->ticker = $this->getCacheTicker();
+        //$this->updateBalances();
 
-        $this->updateBalances();
-
-        $balances = $this->getBalances();
-        $this->balanceTotal = $this->getTotalBalances($balances);
+        //$balances = $this->getBalances();
+        $this->balanceTotal = $this->getTotalBalances();
 
         $currentTotalComission = $this->getCurrentSellComission();
-        $balances = $this->getBalances();
-        $lastTotal = $this->getTotalBalances($balances);
+        // $balances = $this->getBalances();
+        //$this->balanceTotal = $this->getTotalBalances($balances);
 
         $elements = Balance::select(["*"])->sortable(['created_at' => 'desc'])->paginate(100);
 
@@ -92,11 +92,11 @@ class BalancesController extends Controller
 
         $history1h = $history3h = $history6h = $history12h = $history24h = 0;
 
-        $history24h = $this->calcPercents($lastTotal, $hArrResults['before_24h']);
-        $history12h = $this->calcPercents($lastTotal, $hArrResults['before_12h']);
-        $history6h = $this->calcPercents($lastTotal, $hArrResults['before_6h']);
-        $history3h = $this->calcPercents($lastTotal, $hArrResults['before_3h']);
-        $history1h = $this->calcPercents($lastTotal, $hArrResults['before_1h']);
+        $history24h = $this->calcPercents($this->balanceTotal, $hArrResults['before_24h']);
+        $history12h = $this->calcPercents($this->balanceTotal, $hArrResults['before_12h']);
+        $history6h = $this->calcPercents($this->balanceTotal, $hArrResults['before_6h']);
+        $history3h = $this->calcPercents($this->balanceTotal, $hArrResults['before_3h']);
+        $history1h = $this->calcPercents($this->balanceTotal, $hArrResults['before_1h']);
 
 
         return view('balances.index', [

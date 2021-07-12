@@ -31,7 +31,7 @@ class BinanceRequest
     {
         $serverTime = $this->fetch_time($params);
         $after = $this->milliseconds();
-        $timeDifference =  $serverTime - $after;
+        $timeDifference =  $after - $serverTime;
         return  $timeDifference;
     }
 

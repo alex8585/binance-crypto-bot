@@ -92,7 +92,8 @@ class OpenOrders extends Command
         $rawTicker = $this->binApi->prices();
         $this->ticker = $this->binRequest->filterTickerSymbols($rawTicker, $this->symbols);
         $this->balances = $this->getBalances();
-        //dd($this->balances);
+
+        $this->setCacheTicker($rawTicker);
     }
     /**
      * Execute the console command.
@@ -101,9 +102,9 @@ class OpenOrders extends Command
      */
     public function handle()
     {
-
-        $this->initTicker();
         $this->updateBalances();
+        $this->initTicker();
+
 
 
         while (true) {
@@ -113,7 +114,7 @@ class OpenOrders extends Command
             $this->openOrders = $this->getOpenOrders();
             $this->averagedOrders = $this->getAveragedOrders();
 
-
+            //sleep(1);
             $this->initTicker();
 
             $this->sellStopLossOrders();
@@ -229,6 +230,12 @@ class OpenOrders extends Command
 
         foreach ($this->openOrders as $k => $order) {
 
+
+            if ($order->error == 'convert_to_averaged') {
+                //dump(['$order->error convert_to_averaged', $order->symbol]);
+                continue;
+            }
+
             $symbol = $order->symbol;
             $currentPrice = $this->ticker[$symbol];
             $buyPrice  = $order->buy_price;
@@ -241,16 +248,18 @@ class OpenOrders extends Command
                 // if ($order->averaged_at) {
                 //     continue;
                 // }
-
+                dump(['checkAveragingPercentage']);
                 if (!$this->checkIsEnoughtsFunds()) {
                     dump(['!checkIsEnoughtsFunds convertOrderToAveraged']);
                     continue;
                 }
 
+                //dump($this->openOrders);
                 $this->openOrders->pull($k);
                 $this->updateOpenOrders($this->openOrders);
-
-                $this->convertOrderToAveraged($order);
+                //dump($this->openOrders);
+                //dd('1');
+                $this->convertOrderToAveraged($order, $currentPrice);
             }
         }
     }
@@ -425,7 +434,7 @@ class OpenOrders extends Command
                         continue;
                     }
                 }
-
+                dump(['placeNewOrders checkIsEnoughtsFunds']);
                 if (!$this->checkIsEnoughtsFunds()) {
                     dump(['!checkIsEnoughtsFunds']);
                     continue;
@@ -478,7 +487,7 @@ class OpenOrders extends Command
         return  $r;
     }
 
-    public function convertOrderToAveraged($order)
+    public function convertOrderToAveraged($order, $currentPrice)
     {
         $symbol = $order->symbol;
         $quantity = $order->quantity;
@@ -486,6 +495,16 @@ class OpenOrders extends Command
 
         $quantityPrecision = $this->getQuantityPrecision($symbol);
         $quantity = round($quantity, $quantityPrecision);
+
+        $cost = $currentPrice * $quantity;
+
+        if ($cost <  $this->min_order_price) {
+            dump(['cost < min_order_price', $cost]);
+            $order->error = 'convert_to_averaged';
+            $order->save();
+            return null;
+        }
+
 
         try {
             $binOrder = $this->binApi->placeBuyOrder($symbol, $quantity);
@@ -511,6 +530,8 @@ class OpenOrders extends Command
             $order->save();
             $this->averagedOrders->push($order);
         } else {
+            $order->error = 'convert_to_averaged';
+            $order->save();
             $this->updateBalances();
             dump(['convertOrderToAveraged ERROR', $symbol]);
             dump($binOrder);
@@ -578,7 +599,8 @@ class OpenOrders extends Command
 
     public function checkIsEnoughtsFunds()
     {
-        $this->updateBalances();
+        $this->balances = $this->getBalances();
+        //$this->updateBalances();
         $balances = $this->balances;
         $usdArr = $balances['USDT'];
 

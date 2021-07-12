@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Console\Commands\Includes\BotUtils;
-use App\Console\Commands\Includes\BinanceApi;
+//use App\Console\Commands\Includes\BinanceApi;
 use Illuminate\Support\Facades\Cache;
 use Kyslik\ColumnSortable\Sortable;
 
@@ -43,10 +43,10 @@ class BalanceHistory extends Model
             return $this->attributes['end_total'];
         }
 
-        $this->binApi =  new BinanceApi();
+        //$this->binApi =  new BinanceApi();
 
-        $balances = $this->getBalances();
-        $total = $this->getTotalBalances($balances);
+        //$balances = $this->getBalances();
+        $total = $this->getTotalBalances();
 
         return  $total;
     }

@@ -23,17 +23,17 @@ class BalancesHistoryController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->binRequest = new BinanceRequest();
-        $this->binApi =  new BinanceApi();
+        //$this->binRequest = new BinanceRequest();
+        //$this->binApi =  new BinanceApi();
     }
 
     public function index()
     {
-        $rawTicker = $this->binApi->prices();
-        $this->symbols = Symbol::select(['symbol', 'min_lot_size', 'data'])->get()->toArray();
-        $this->ticker = $this->binRequest->filterTickerSymbols($rawTicker, $this->symbols);
-
-        $this->updateBalances();
+        // $rawTicker = $this->binApi->prices();
+        //$this->symbols = Symbol::select(['symbol', 'min_lot_size', 'data'])->get()->toArray();
+        //$this->ticker = $this->binRequest->filterTickerSymbols($rawTicker, $this->symbols);
+        //$this->ticker = $this->getCacheTicker();
+        //$this->updateBalances();
 
         $historys  = BalanceHistory::select([
 

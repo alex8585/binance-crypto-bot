@@ -25,6 +25,7 @@ class BinanceApi
         $binApi->setTimeOffset($binTimeDiff);
 
         $this->api =  new \Binance\RateLimiter($binApi);
+        //$this->api =  $binApi;
         // $this->ccxt = new CcxtApi(
         //     [
         //         'rateLimit' => 100,

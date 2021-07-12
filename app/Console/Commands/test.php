@@ -25,7 +25,7 @@ class test extends Command
      *
      * @var string
      */
-    protected $signature = 'test';
+    protected $signature = 'test3';
 
     /**
      * The console command description.
@@ -55,7 +55,7 @@ class test extends Command
     {
 
         dd('1');
-        
+
         $parcer_map = config('settings.binance.tv_parcer_map');
 
 

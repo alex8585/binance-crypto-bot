@@ -13,6 +13,7 @@ use App\Option  as Option;
 use App\Console\Commands\Includes\BotUtils  as BotUtils;
 use App\Console\Commands\Includes\BinanceApi  as BinanceApi;
 use App\Console\Commands\Includes\BinanceRequest;
+use App\Console\Commands\Includes\NewBinanceApi;
 
 class OrdersChangeHandlers extends Command
 {
@@ -40,11 +41,18 @@ class OrdersChangeHandlers extends Command
     {
         parent::__construct();
 
-        $this->binApi =  new BinanceApi();
-        $this->binRequest = new BinanceRequest();
+        $this->key = $this->getOption('api_key');
+        $this->secret = $this->getOption('api_secret');
+
+        $this->binApi = new NewBinanceApi($this->key, $this->secret);
+ //$balances = $this->getBinanceBalances();
+
+ //dd($balances);
+        //$this->binApi =  new BinanceApi();
+        //$this->binRequest = new BinanceRequest();
 
 
-        $this->symbols = Symbol::select(['symbol', 'min_lot_size'])->get()->toArray();
+        // $this->symbols = Symbol::select(['symbol', 'min_lot_size'])->get()->toArray();
     }
 
     /**
@@ -68,7 +76,8 @@ class OrdersChangeHandlers extends Command
 
     public function onBalanceUpdate($api, $balances)
     {
-        $this->updateBalances();
+        $this->updateBalancesOnBalanceUpdate($balances);
+        //$this->updateBalances();
     }
 
     public function onOrderUpdate($api, $binOrder)
@@ -93,7 +102,8 @@ class OrdersChangeHandlers extends Command
         }
 
         if ($binOrder['orderStatus'] == "FILLED") {
-            $this->updateBalances();
+            dump(['FILLED']);
+            //$this->updateBalances();
         }
     }
 }
