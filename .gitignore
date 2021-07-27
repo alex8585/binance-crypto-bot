@@ -13,3 +13,4 @@
 /tv_parcer/node_modules
 .phpunit.result.cache
 .env
+.env.testing

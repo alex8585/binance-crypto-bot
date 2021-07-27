@@ -143,6 +143,19 @@ trait BotUtils
         ]);
     }
 
+    public function convertDbBalances($dbBalanses)
+    {
+        $balanses = [];
+        foreach ($dbBalanses as $balance) {
+            $balanses[$balance->symbol] = [
+                "symbol" => $balance->symbol,
+                "available" => $balance->available,
+                "on_order" => $balance->on_order,
+            ];
+        }
+        return  $balanses;
+    }
+
     public function updateBalances()
     {
 
@@ -153,15 +166,32 @@ trait BotUtils
         }
 
 
-        $oldBalances = Cache::get('balances2', []);
+        //$oldBalances = Cache::get('balances2', []);
 
         Cache::put('balances2', $balances);
         $this->setTotalBalances($balances);
 
-        if ($oldBalances != $balances) {
-            $this->updateBalanceHistory($balances);
-            $this->updateDbBalances($balances);
-        }
+        //dump($oldBalances);
+        //dump($balances);
+
+        // $isCacheEqual = ($oldBalances == $balances);
+        //$isDbEqual = true;
+
+        // if ($isCacheEqual) {
+        //     $dbBalanses = Balance::all();
+        //     $dbBalanses = $this->convertDbBalances($dbBalanses);
+        //     //dump($dbBalanses);
+        //     $isDbEqual = ($dbBalanses == $balances);
+        // }
+
+        //dump(['isCacheEqual', $isCacheEqual]);
+        //dump(['isDbEqual', $isDbEqual]);
+
+        //if (!$isCacheEqual || !$isDbEqual) {
+        // dump(['oldBalances != balances']);
+        $this->updateBalanceHistory($balances);
+        $this->updateDbBalances($balances);
+        // }
 
         return true;
     }
@@ -200,6 +230,7 @@ trait BotUtils
         $balance_total = $this->calcTotalBalancesPrice($balances);
         dump($balance_total);
         Cache::put('balance_total2', $balance_total);
+        return  $balance_total;
     }
 
     public function getTotalBalances($balances = [])
