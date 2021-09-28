@@ -159,6 +159,8 @@
                         </div>
                     </div> 
 
+                    
+
                     {{-- <div class="col-sm-6">
                         <div class="form-group">
                             <label for="green_percent_required" class="control-label">
@@ -269,6 +271,19 @@
                         </div>
                     </div>
 
+
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="green_cnt_update_interval" class="control-label">
+                                {{_('Интервал обновления счетчика зелёных:')}}
+                                <div class='text-danger' >{{ $errors->first('green_cnt_update_interval') }}</div>
+                            </label>
+                            <input type="text" name="green_cnt_update_interval" 
+                                    value="{{$optons['green_cnt_update_interval']}}" 
+                                    class="form-control {{$errors->has('green_cnt_update_interval') ? 'is-invalid':''}}">
+                        
+                        </div>
+                    </div> 
                     
 
                 </div>

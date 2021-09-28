@@ -5,8 +5,8 @@
    <div>
       <div class='row'>
          <div class="col-sm-6">
-            <div>{{_('Среднее количество зелёных валют за прошлый час')}} {{round($avg,2)}}</div>
-               <div> {{_('Количество зелёных валют в начале часа')}} 
+            <div>{{_('Среднее количество зелёных валют за прошлый час:')}} {{round($avg,2)}}</div>
+               <div> {{_('Количество зелёных валют:')}} 
                      <span class="{{ $green_above_avg ? 'text-success':'text-danger'}}">{{ $current}}</span> 
                </div>
          </div>

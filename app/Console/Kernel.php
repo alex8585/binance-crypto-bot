@@ -39,7 +39,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('clear_old_order_books')->cron('30 05 */7 * *');
 
         //$schedule->command('get_24_change')->cron('00 * * * *');
-        $schedule->command('get_green_count')->cron('*/5 * * * *');
+        $schedule->command('get_green_count')->cron('*/1 * * * *');
 
 
         $schedule->command('update_balances')->cron('*/30 * * * *');

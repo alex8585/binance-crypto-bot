@@ -45,33 +45,7 @@ class checkGreenAndStatisticCounts extends Command
      * @return int
      */
 
-    private function updateGreen()
-    {
-        $circle = Circle::orderBy('created_at', 'DESC')->first();
-
-        $greenCounts = GreenCount::select('created_at', 'cnt')
-            ->where('circle_id', $circle->id)
-            ->orderBy('created_at', 'DESC')->get();
-
-
-        if (!$greenCounts->count()) {
-            Option::updateOption('green_above_avg', 0);
-            Option::updateOption('green_avg_cnt', 0);
-            Option::updateOption('green_current_cnt', 0);
-            return;
-        }
-
-        $current =  $greenCounts->first()->cnt;
-        $average = $greenCounts->avg('cnt');
-        $green_above_avg = ($current > $average);
-
-        Option::updateOption('green_above_avg', $green_above_avg);
-        Option::updateOption('green_avg_cnt', $average);
-        Option::updateOption('green_current_cnt', $current);
-        // dump($current);
-        // dump($average);
-        // dump($green_above_avg);
-    }
+   
 
     public function updateStatisticsCountStart()
     {
@@ -100,7 +74,7 @@ class checkGreenAndStatisticCounts extends Command
 
     public function handle()
     {
-        $this->updateGreen();
+        // $this->updateGreen();
         $this->updateStatisticsCountStart();
 
 

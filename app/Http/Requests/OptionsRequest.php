@@ -41,6 +41,7 @@ class OptionsRequest extends FormRequest
             'statistics_count_trade_start' => 'required|numeric',
             'averaging_percentage' => 'nullable|numeric',
             'sales_perc_averaged' => 'nullable|numeric',
+            "green_cnt_update_interval" => 'nullable|numeric|min:5|',
         ];
     }
 }

@@ -34,7 +34,8 @@ class OptionsController extends Controller
             'statistics_count_trade_stop',
             'statistics_count_trade_start',
             'averaging_percentage',
-            'sales_perc_averaged'
+            'sales_perc_averaged',
+            'green_cnt_update_interval'
         ];
     }
 
