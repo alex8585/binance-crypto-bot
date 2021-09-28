@@ -46,7 +46,7 @@ class updateBalances extends Command
         $lastBalance = Balance::latest()->first();
 
 
-        $isOrdersUpdated =  $lastOrder->updated_at->addMinutes(3)->gt(now());
+        $isOrdersUpdated =  $lastOrder->updated_at->addMinutes(30)->gt(now());
         $isBalancesStaled = $lastBalance->updated_at->addMinutes(120)->lt(now());
 
 

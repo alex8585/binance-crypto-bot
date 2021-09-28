@@ -42,7 +42,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('get_green_count')->cron('*/5 * * * *');
 
 
-
+        $schedule->command('update_balances')->cron('*/30 * * * *');
 
 
         // $schedule->command('update_balance_history')->cron('59 23 * * *');
