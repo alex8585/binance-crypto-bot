@@ -65,11 +65,11 @@ class getGreenCount extends Command
 
     private function updateGreen()
     {
-        $circle = Circle::orderBy('created_at', 'DESC')->skip(1)
+        $lastCrcle = Circle::orderBy('created_at', 'DESC')->skip(1)
             ->first();
 
         $greenCounts = GreenCount::select('created_at', 'cnt')
-            ->where('circle_id', $circle->id)
+            ->where('circle_id', $lastCrcle->id)
             ->orderBy('created_at', 'DESC')->get();
 
         if (!$greenCounts->count()) {
@@ -79,10 +79,10 @@ class getGreenCount extends Command
             return;
         }
 
-        $current =  $greenCounts->first()->cnt;
+        $current =  GreenCount::orderBy('created_at', 'DESC')->select('cnt')->first()->cnt;
+
         $average = $greenCounts->avg('cnt');
         $green_above_avg = ($current > $average);
-
         //dd($average);
         Option::updateOption('green_above_avg', $green_above_avg);
         Option::updateOption('green_avg_cnt', $average);
